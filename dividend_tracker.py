@@ -89,4 +89,4 @@ sheet.clear()
 sheet.update('A1',[df.columns.tolist()])
 sheet.update('A2', df.values.tolist())
 
-print('Success! - Louie automation')
+print('Success!')
