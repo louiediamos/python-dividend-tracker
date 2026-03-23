@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 credentials.json
 venv/
 __pycache__/
 *.pyc
 .DS_Store
+<<<<<<< HEAD
 
+=======
+=======
+>>>>>>> 2b85dc60f4a811d391a8f08158a938325e11442d
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -211,3 +216,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+<<<<<<< HEAD
+=======
+
+credentials.json
+>>>>>>> main
+>>>>>>> 2b85dc60f4a811d391a8f08158a938325e11442d
