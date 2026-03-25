@@ -29,14 +29,14 @@ if json_str:
     print('Type of json_str:', type(json_str))  # should be <class 'str'>
     print('Length of json_str:', len(json_str))
     print('First 100 chars:', json_str[:100])
-try:
-    creds_dict= json.loads(json_str) #running in GitHub Actions
-    print('Type after json.loads:', type(creds_dict)) #must be <class 'dict'>
-    creds = Credentials.from_service_account_info(creds_dict, scopes = scope)
-except json.JSONDecodeError as e:
-    raise ValueError(f'Invalid JSON in Google_Creds: {e}')
-except Exception as e:
-    raise RuntimeError(f'Failed to create credentials env var: {e}')
+    try:
+            creds_dict= json.loads(json_str) #running in GitHub Actions
+            print('Type after json.loads:', type(creds_dict)) #must be <class 'dict'>
+            creds = Credentials.from_service_account_info(creds_dict, scopes = scope)
+    except json.JSONDecodeError as e:
+            raise ValueError(f'Invalid JSON in Google_Creds: {e}')
+    except Exception as e:
+            raise RuntimeError(f'Failed to create credentials env var: {e}')
 
 else: #local development fallback
     print('No Google_creds env var > using local credentials.json')
