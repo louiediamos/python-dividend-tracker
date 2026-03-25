@@ -2,10 +2,10 @@ name: Weekly Dividend Tracker
 
 on:
   schedule:
-    - cron: '0 2 * * 1' 
+    - cron: '0 2 * * 1'
   workflow_dispatch:
 
-jobs: 
+jobs:
   run-script:
     runs-on: ubuntu-latest
 
@@ -15,7 +15,7 @@ jobs:
 
       - name: Set up Python
         uses: actions/setup-python@v5
-        with: 
+        with:
           python-version: '3.11'
 
       - name: Install dependencies
@@ -25,12 +25,8 @@ jobs:
 
       - name: Install Chrome & ChromeDriver
         uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: stable
-          chromedriver-version: latest
 
       - name: Run scraper
-        env: 
-          GOOGLE_CREDS: ${{secrets.GOOGLE_CREDS}}
+        env:
+          GOOGLE_CREDS: ${{ secrets.GOOGLE_CREDS }}
         run: python dividend_tracker.py
-          
