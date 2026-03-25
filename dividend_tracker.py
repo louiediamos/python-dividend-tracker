@@ -1,4 +1,7 @@
 from selenium import webdriver
+from selenium import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
@@ -21,26 +24,26 @@ scope = [
 
 json_str = os.getenv("GOOGLE_CREDS")
 
-print(type(json_str))
-
 if json_str: 
-    creds_dict= json.loads(json_str) #running in GitHub Actions
-else:
-    creds = Credentials.from_service_account_file('credentials.json', scopes = scope)
-
-if not json_str:
-    raise ValueError('GOOGLE_CREDS environment variable not set! Check GitHub Secrets')
-
+    print('Using GOOGLE_CREDS env variable')
 try:
-    creds_dict = json.loads(json_str)
-    print(type(creds_dict))
+    creds_dict= json.loads(json_str) #running in GitHub Actions
+    print('Type afetr json.loads:', type(creds_dict))
+    print('Length of json_str: ', len(json_str))
+    print('First 100 chars:', json_str[:100])
+    creds = Credentials.from_service_account_file(creds_dict, scopes = scope)
 except json.JSONDecodeError as e:
-    raise ValueError(f'Invalid JSON in GOOGLE_CREDS secret: {e}')
+    raise ValueError(f'Invalid JSON in Google_Creds: {e}')
+except Exception as e:
+    raise ValueError(f'Failed to create credentials env var: {e}')
 
-creds = Credentials.from_service_account_info(
-    'creds_dict',
-    scopes = scope
-    )
+else: #local development fallback
+    print('No Google_creds env var > using local credentials.json')
+    try:
+        creds = Credentials.from_service_account_file('credentials.json', scopes = scope)
+    except FileNotFoundError:
+        raise FileNotFoundError('credentials.json not found in current directory')
+    raise ValueError(f'Invalid JSON in GOOGLE_CREDS secret: {e}')
 
 client = gspread.authorize(creds)
 spreadsheet = client.open_by_key('1J1_80uGHwLL_kdiI88F37IRV0teKi5mM8nl5xkyhJUI')
@@ -58,16 +61,24 @@ options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
 
-driver.get(url)
-time.sleep(5) #wait for JS to load the table(adjust if needed, or use WebDriverWait)
+driver.get(url) #better wait: wait up to 15s for table to appear
+try:
+    WebDriverWait(driver, 15).until(
+        EC.presence_of_all_elements_located((By.TAG_NAME, "table"))
+    )
+except Exception as e:
+    print('Table not found after wait:', e)
+    print(driver.page_source[:2000])
+    driver.quit()
+    exit(1)
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 driver.quit()
 
 table = soup.find('table') #hopefully now finds it; if not, inspect further
 
-if table is None:
-    print('Still no table even after JS render. Page structure changed or needs more wait/selectors.')
+if not table:
+    print('No table found even after wait')
     print(soup.prettify()[:2000]) #debug: see if table appears in full source 
     exit(1)
 
@@ -88,11 +99,14 @@ for row in rows[1:]: #skip header
 
         data.append([company,classification, dividend_type,amount,ex_date,record_date, payment_date])
 
-#convert to dataframe
+if not data:
+    print('No Dividend data found')
+    exit(0)
 
+#convert to dataframe
 df = pd.DataFrame(data, columns=[
     'Company',
-    'sample',
+    'Class',
     'Type',
     'Amount',
     'Ex-Date',
@@ -104,9 +118,11 @@ if df.empty:
     exit()
 
 #push to google sheets
-sheet.clear()
-
-sheet.update('A1',[df.columns.tolist()])
-sheet.update('A2', df.values.tolist())
-
-print('Success!')
+try:
+    sheet.clear()
+    sheet.update('A1',[df.columns.tolist()])
+    sheet.update('A2', df.values.tolist())
+    print('Success! Data updated in Google Sheet.')
+except Exception as e:
+    print('Failed to update sheet: ',e)
+    exit(1)
