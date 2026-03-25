@@ -1,1 +1,36 @@
+name: Weekly Dividend Tracker
 
+on:
+  schedule:
+    - cron: '0 2 * * 1' 
+  workflow_dispatch: 
+
+jobs: 
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: 
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Chrome & ChromeDriver
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+          chromedriver-version: latest
+
+      - name: Run scraper
+        env: 
+          GOOGLE_CREDS: ${{secrets.GOOGLE_CREDS}}
+        run: python scraper.py
+          
