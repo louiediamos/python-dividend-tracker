@@ -31,7 +31,7 @@ try:
     print('Type afetr json.loads:', type(creds_dict))
     print('Length of json_str: ', len(json_str))
     print('First 100 chars:', json_str[:100])
-    creds = Credentials.from_service_account_file(creds_dict, scopes = scope)
+    creds = Credentials.from_service_account_info(creds_dict, scopes = scope)
 except json.JSONDecodeError as e:
     raise ValueError(f'Invalid JSON in Google_Creds: {e}')
 except Exception as e:
