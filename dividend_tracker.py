@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -43,7 +43,6 @@ else: #local development fallback
         creds = Credentials.from_service_account_file('credentials.json', scopes = scope)
     except FileNotFoundError:
         raise FileNotFoundError('credentials.json not found in current directory')
-    raise ValueError(f'Invalid JSON in GOOGLE_CREDS secret: {e}')
 
 client = gspread.authorize(creds)
 spreadsheet = client.open_by_key('1J1_80uGHwLL_kdiI88F37IRV0teKi5mM8nl5xkyhJUI')
