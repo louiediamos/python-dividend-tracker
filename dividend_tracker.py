@@ -8,6 +8,8 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import gspread
+import os
+import json
 from google.oauth2.service_account import Credentials
 
 # auth google sheets
@@ -17,8 +19,14 @@ scope = [
     'https://www.googleapis.com/auth/drive'
 ]
 
+json_str = os.getenv("GOOGLE_CREDS")
+
+if not json_str:
+    raise ValueError('GOOGLE_CREDS environment variable not set! Check GitHub Secrets')
+
+creds_dict = json.loads(json_str)
 creds = Credentials.from_service_account_file(
-    'credentials.json',
+    'creds_dict',
     scopes = scope
     )
 
