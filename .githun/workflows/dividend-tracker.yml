@@ -1,11 +1,11 @@
-yaml
 name: Weekly Dividend Tracker
 
 on:
-  schedule:
-    - cron: '0 2 * * 1'      # Every Monday at 02:00 UTC (~10 AM Manila time)
-  workflow_dispatch:         # Manual "Run workflow" button 
-
+       schedule:
+         - cron: '0 2 * * 1'
+       workflow_dispatch:
+       push:                     # ← add these 3 lines temporarily
+         branches: [main]
 jobs:
   run-script:
     runs-on: ubuntu-latest
@@ -32,3 +32,5 @@ jobs:
         env:
           GOOGLE_CREDS: ${{ secrets.GOOGLE_CREDS }}
         run: python dividend_tracker.py
+
+
