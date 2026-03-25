@@ -31,6 +31,12 @@ else:
 if not json_str:
     raise ValueError('GOOGLE_CREDS environment variable not set! Check GitHub Secrets')
 
+try:
+    creds_dict = json.loads(json_str)
+    print(type(creds_dict))
+except json.JSONDecodeError as e:
+    raise ValueError(f'Invalid JSON in GOOGLE_CREDS secret: {e}')
+
 creds = Credentials.from_service_account_info(
     'creds_dict',
     scopes = scope
