@@ -22,12 +22,15 @@ scope = [
 json_str = os.getenv("GOOGLE_CREDS")
 
 print(type(json_str))
-print(json_str[:100])
+
+if json_str: 
+    creds_dict= json.loads(json_str) #running in GitHub Actions
+else:
+    creds = Credentials.from_service_account_file('credentials.json', scopes = scope)
 
 if not json_str:
     raise ValueError('GOOGLE_CREDS environment variable not set! Check GitHub Secrets')
 
-creds_dict = json.loads(json_str)
 creds = Credentials.from_service_account_info(
     'creds_dict',
     scopes = scope
