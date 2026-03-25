@@ -21,6 +21,9 @@ scope = [
 
 json_str = os.getenv("GOOGLE_CREDS")
 
+print(type(json_str))
+print(json_str[:100])
+
 if not json_str:
     raise ValueError('GOOGLE_CREDS environment variable not set! Check GitHub Secrets')
 
