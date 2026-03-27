@@ -1,5 +1,5 @@
 # python-dividend-tracker
-My first Python automation script to track PSE dividends. 
+My first Python automation script to scrape PSE dividends data. 
 
 ## Features 
 
@@ -10,5 +10,5 @@ My first Python automation script to track PSE dividends.
 ## Setup
 
 - Add credentials.json (not included)
-- Install dependencies
+- Install dependencies listed in requirements.txt
 - Run script
