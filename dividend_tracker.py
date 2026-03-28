@@ -6,9 +6,6 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-import time
-import requests
-from bs4 import BeautifulSoup
 import pandas as pd
 import gspread
 import os
@@ -24,29 +21,17 @@ scope = [
 
 json_str = os.getenv("GOOGLE_CREDS")
 
+#running in GitHub Actions
 if json_str: 
     print('Using GOOGLE_CREDS environment variable')
-    print('Type of json_str:', type(json_str))  # should be <class 'str'>
-    print('Length of json_str:', len(json_str))
-    print('First 100 chars:', json_str[:100])
-    try:
-            creds_dict= json.loads(json_str) #running in GitHub Actions
-            print('Type after json.loads:', type(creds_dict)) #must be <class 'dict'>
-            creds = Credentials.from_service_account_info(creds_dict, scopes = scope)
-    except json.JSONDecodeError as e:
-            raise ValueError(f'Invalid JSON in Google_Creds: {e}')
-    except Exception as e:
-            raise RuntimeError(f'Failed to create credentials env var: {e}')
+    creds_dict= json.loads(json_str) 
+    creds = Credentials.from_service_account_info(creds_dict, scopes = scope)
 
-else: #local development fallback
+#local development fallback
+else: 
     print('No Google_creds env var > using local credentials.json')
-    try:
-        creds = Credentials.from_service_account_file('credentials.json', scopes = scope)
-    except FileNotFoundError:
-        raise FileNotFoundError('credentials.json not found in current directory')
-    except Exception as e:
-        raise RuntimeError(f'Local credentials failed: {e}')
-
+    creds = Credentials.from_service_account_file('credentials.json', scopes = scope)
+    
 client = gspread.authorize(creds)
 spreadsheet = client.open_by_key('1J1_80uGHwLL_kdiI88F37IRV0teKi5mM8nl5xkyhJUI')
 sheet = spreadsheet.worksheet('PSE Dividend Tracker')
@@ -64,25 +49,14 @@ options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
 
 driver.get(url) #better wait: wait up to 15s for table to appear
-try:
-    WebDriverWait(driver, 15).until(
+WebDriverWait(driver, 15).until(
         EC.presence_of_all_elements_located((By.TAG_NAME, "table"))
     )
-except Exception as e:
-    print('Table not found after wait:', e)
-    print(driver.page_source[:2000])
-    driver.quit()
-    exit(1)
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 driver.quit()
 
-table = soup.find('table') #hopefully now finds it; if not, inspect further
-
-if not table:
-    print('No table found even after wait')
-    print(soup.prettify()[:2000]) #debug: see if table appears in full source 
-    exit(1)
+table = soup.find('table') 
 
 rows = table.find_all('tr')
 data = []
@@ -100,10 +74,6 @@ for row in rows[1:]: #skip header
         payment_date = cols[6].text.strip()
 
         data.append([company,classification, dividend_type,amount,ex_date,record_date, payment_date])
-
-if not data:
-    print('No Dividend data found')
-    exit(0)
 
 #convert to dataframe
 df = pd.DataFrame(data, columns=[
