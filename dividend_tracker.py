@@ -102,7 +102,7 @@ except Exception as e:
 #formating header
 header_format = CellFormat(
     textFormat=TextFormat(bold=True),
-    backgroundColor=Color(100, 149, 237) #conflower blue
+    backgroundColor=Color(0.792, 0.929, 0.984) #conflower blue
 )
 
 format_cell_range(sheet, 'A1:G1', header_format)
