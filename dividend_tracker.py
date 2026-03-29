@@ -48,7 +48,7 @@ options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
 
-driver.get(url) #better wait: wait up to 15s for table to appear
+driver.get(url) 
 WebDriverWait(driver, 20).until(
         EC.presence_of_all_elements_located((By.TAG_NAME, "table"))
     )
@@ -62,7 +62,7 @@ table = soup.find('table')
 rows = table.find_all('tr')
 data = []
 
-for row in rows[1:]: #skip header
+for row in rows[1:]: 
     cols = row.find_all('td')
     if len(cols)>=7:
         company = cols[0].text.strip()
