@@ -15,7 +15,6 @@ from gspread_formatting import *
 
 
 # auth google sheets
-
 scope = [
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive'
@@ -39,11 +38,10 @@ spreadsheet = client.open_by_key('1J1_80uGHwLL_kdiI88F37IRV0teKi5mM8nl5xkyhJUI')
 sheet = spreadsheet.worksheet('PSE Dividend Tracker')
 
 #scrape PSE Edge with JS rendering
-
 url = 'https://edge.pse.com.ph/disclosureData/dividends_and_rights_info_form.do'
 
 options = Options()
-options.add_argument('--headless') #run without opening the browser window
+options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
@@ -67,7 +65,6 @@ data = []
 for row in rows[1:]: #skip header
     cols = row.find_all('td')
     if len(cols)>=7:
-        #Adjust indices based on actual columns(inspect in browser)
         company = cols[0].text.strip()
         shr_class = cols[1].text.strip()
         dividend_type = cols[2].text.strip()
@@ -103,7 +100,6 @@ except Exception as e:
     exit(1)
 
 #formating header
-
 header_format = CellFormat(
     textFormat=TextFormat(bold=True),
     backgroundColor=Color(100, 149, 237) #conflower blue
@@ -111,4 +107,3 @@ header_format = CellFormat(
 
 format_cell_range(sheet, 'A1:G1', header_format)
 set_frozen(sheet, rows=1)
-
