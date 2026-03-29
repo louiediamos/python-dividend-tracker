@@ -43,7 +43,7 @@ sheet = spreadsheet.worksheet('PSE Dividend Tracker')
 url = 'https://edge.pse.com.ph/disclosureData/dividends_and_rights_info_form.do'
 
 options = Options()
-#options.add_argument('--headless') #run without opening the browser window
+options.add_argument('--headless') #run without opening the browser window
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
