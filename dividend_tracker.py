@@ -11,6 +11,8 @@ import gspread
 import os
 import json
 from google.oauth2.service_account import Credentials
+from gspread_formatting import *
+
 
 # auth google sheets
 
@@ -41,7 +43,7 @@ sheet = spreadsheet.worksheet('PSE Dividend Tracker')
 url = 'https://edge.pse.com.ph/disclosureData/dividends_and_rights_info_form.do'
 
 options = Options()
-options.add_argument('--headless') #run without opening the browser window
+#options.add_argument('--headless') #run without opening the browser window
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
@@ -49,11 +51,12 @@ options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
 
 driver.get(url) #better wait: wait up to 15s for table to appear
-WebDriverWait(driver, 15).until(
+WebDriverWait(driver, 20).until(
         EC.presence_of_all_elements_located((By.TAG_NAME, "table"))
     )
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
+
 driver.quit()
 
 table = soup.find('table') 
@@ -66,14 +69,14 @@ for row in rows[1:]: #skip header
     if len(cols)>=7:
         #Adjust indices based on actual columns(inspect in browser)
         company = cols[0].text.strip()
-        classification = cols[1].text.strip()
+        shr_class = cols[1].text.strip()
         dividend_type = cols[2].text.strip()
         amount = cols[3].text.strip()
         ex_date = cols[4].text.strip()
         record_date = cols[5].text.strip()
         payment_date = cols[6].text.strip()
 
-        data.append([company,classification, dividend_type,amount,ex_date,record_date, payment_date])
+        data.append([company, shr_class, dividend_type,amount,ex_date,record_date, payment_date])
 
 #convert to dataframe
 df = pd.DataFrame(data, columns=[
@@ -98,3 +101,14 @@ try:
 except Exception as e:
     print('Failed to update sheet: ',e)
     exit(1)
+
+#formating header
+
+header_format = CellFormat(
+    textFormat=TextFormat(bold=True),
+    backgroundColor=Color(100, 149, 237) #conflower blue
+)
+
+format_cell_range(sheet, 'A1:G1', header_format)
+set_frozen(sheet, rows=1)
+
