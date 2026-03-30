@@ -109,6 +109,8 @@ try:
     sheet_pref.update('A3', df_pref.values.tolist())
 
     format_cell_range(sheet_common and sheet_pref, 'A2:G2', header_format)
+    format_cell_range(sheet_pref, 'A2:G2', header_format)
+    
     set_frozen(sheet_common, rows=2)
 
     print('Success! Data updated in Google Sheet.')
