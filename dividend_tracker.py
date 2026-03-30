@@ -90,26 +90,28 @@ sheet_pref = spreadsheet.worksheet('Preferred Dividends')
 #push to google sheets
 try:
     #Common
+    headers_common = df_common.columns.tolist()
     sheet_common.clear()
     sheet_common.merge_cells('A1:G1')
-    title_format = CellFormat(textFormat=TextFormat(bold=True), horizontalAlignment='CENTER', verticalAlignment='MIDDLE', backgroundColor=Color(0.792, 0.929, 0.984))
-    format_cell_range(sheet_common, 'A1:G1', title_format)
-
-    header_format = CellFormat(    textFormat=TextFormat(bold=True), backgroundColor=Color(0.792, 0.929, 0.984)) #cornflower blue 3
-    hearders = df_common.columns.tolist()
     sheet_common.update(values=[['Common Dividends']], range_name='A1')
-    sheet_common.update(values=[hearders], range_name='A2')
+    sheet_common.update(values=[headers_common], range_name='A2')
     sheet_common.update('A3', df_common.values.tolist())
 
     #Preferred
+    headers_pref = df_pref.columns.tolist()
     sheet_pref.clear()
     sheet_pref.merge_cells('A1:G1')
     sheet_pref.update(values=[['Preferred Dividends']],range_name='A1')
-    sheet_pref.update(values=[hearders], range_name='A2')
+    sheet_pref.update(values=[headers_pref], range_name='A2')
     sheet_pref.update('A3', df_pref.values.tolist())
+
+    title_format = CellFormat(textFormat=TextFormat(bold=True), horizontalAlignment='CENTER', verticalAlignment='MIDDLE', backgroundColor=Color(0.792, 0.929, 0.984))
+    header_format = CellFormat(    textFormat=TextFormat(bold=True), backgroundColor=Color(0.792, 0.929, 0.984)) #cornflower blue 3
 
     format_cell_range(sheet_common and sheet_pref, 'A2:G2', header_format)
     format_cell_range(sheet_pref, 'A2:G2', header_format)
+    format_cell_range(sheet_common, 'A1:G1', title_format)
+    format_cell_range(sheet_pref, 'A1:G1', title_format)
     
     set_frozen(sheet_common, rows=2)
 
