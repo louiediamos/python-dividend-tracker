@@ -2,7 +2,7 @@ name: Weekly Dividend Tracker
 
 on:
   schedule:
-    - cron: '0 12 * * 1'      # Every Monday at 08:00 PHT (Manila time)
+    - cron: '0 00 * * 1'      # Every Monday at 08:00 AM(Manila time)
   workflow_dispatch:         # Manual "Run workflow" button
 
 jobs:
